@@ -1,0 +1,70 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>K12 Ping</title>
+    <script src="js/d3.v2.js" type="text/javascript"></script>
+    <style>
+      path {
+        fill: #151;
+        stroke: #fff;
+      };
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <svg id="svg" width="960" height="500"></svg>
+    </div>
+
+    <script type="text/javascript">
+
+var xy = d3.geo.albers();
+var path = d3.geo.path(xy);
+
+d3.json("data/us-states.json", function(collection) {
+    d3.select("#svg").selectAll("path")
+      .data(collection.features)
+    .enter().append("path")
+      .attr("d", path);
+  console.log(collection);
+});
+
+var ping = function(elem) {
+  elem
+    .style("stroke-width", 5)
+    .attr("r", 0)
+    .style("fill", "none")
+    .style("stroke", "red")
+    .transition()
+//    .ease("exp")
+    .duration(3000)
+    .attr("r", 20)
+    .style("stroke-opacity", 0)
+    .style("stroke-width", 1);
+}
+
+var pulseMe = function(geo) {
+  var lat = geo.coords.latitude,
+      lon = geo.coords.longitude;
+  console.log(lat, lon);
+  var proj = xy([lon, lat]);
+  console.log(proj);
+  var x = proj[0], y = proj[1];
+  d3.select("#svg").append("circle")
+    .attr("cx", x) 
+    .attr("cy", y)
+    .call(ping)
+}
+
+navigator.geolocation.getCurrentPosition(pulseMe, function(err) {});
+
+//var svg = d3.select("#container")
+//            .append("svg:svg")
+//            .attr("width", 800)
+//            .attr("height", 600);
+//
+//d3.select("svg:svg")
+
+    </script>
+  </body>
+</html>
+
